@@ -1,0 +1,10 @@
+# Serving deps for the LR endpoint only — deliberately excludes torch and
+# transformers. Render's free instance has 512MB RAM; importing torch would
+# spend ~200MB of it on a model that is a scikit-learn pipeline.
+# scikit-learn is pinned because baseline_lr.joblib is a pickle: a different
+# minor version can fail to unpickle it or silently change estimator behaviour.
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+scikit-learn==1.7.2
+joblib==1.4.2
+pydantic==2.10.4
