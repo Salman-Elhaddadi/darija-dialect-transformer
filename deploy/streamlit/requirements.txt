@@ -1,0 +1,12 @@
+# Streamlit Community Cloud installs from the requirements.txt next to the entrypoint.
+#
+# The extra index matters: PyPI's default linux torch wheel drags in the full CUDA
+# toolchain (~2.5 GB of nvidia-* packages) which blows the build image size on a free
+# runner and buys nothing, because this host has no GPU. Wheels from the CPU index carry
+# a "+cpu" local version, which PEP 440 sorts above the plain version, so pip resolves
+# torch to the CPU build without needing an exact pin.
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+streamlit>=1.35
+torch>=2.2
+transformers>=4.40
