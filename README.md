@@ -66,6 +66,8 @@ One caveat worth knowing before you try to match published numbers: fixing a see
 - `src/data.py` — deterministic split + verification
 - `src/analyze.py` — cross-model error analysis (reads persisted predictions only, no retraining)
 - `src/fetch_encoder.py` — resumable MARBERT weight download
+- `src/smoke_test.py` — checks the shipped head loads and discriminates through the *deployment* path (Hub encoder, torch + transformers only); catches breakage that accuracy metrics cannot, including inverted label polarity
+- `src/score_deployed.py` — scores the shipped head on the test split; `--encoder local|hub` also checks that the Hub encoder the demos use matches the snapshot training used
 - `src/serve.py` — FastAPI serving for any of the three models, selected by `MODEL` env var
 - `models/marbert_frozen_head.pt` — the trained linear head, 5 KB, with its pooling mode recorded alongside the weights
 - `deploy/` — Streamlit (MARBERT), Render (LR baseline), HF Space (MARBERT) configs
@@ -78,3 +80,4 @@ One caveat worth knowing before you try to match published numbers: fixing a see
 - Trained and evaluated on one dataset (MAC corpus); generalization to other Darija sources (YouTube comments, forums) is untested.
 - The corpus is Arabic-script only, so Latin-script Darija (Arabizi) is out of domain. The serving code flags it rather than scoring it silently.
 - The two classical baselines were not re-run across seeds in this repo, so they appear as a single number each. LR is deterministic; the MLP is not.
+- The shipped head is the seed with the best *validation* score, while the single-seed column above is the best *test* seed — so the deployed model sits somewhere in 0.8944–0.8983 rather than exactly at 0.8983. Selecting on validation is the right call; it just means the deployed model's exact score has to be measured with `src/score_deployed.py` instead of read off the table.
