@@ -15,3 +15,7 @@ models/*
 !models/baseline/
 models/baseline/*
 !models/baseline/baseline_lr.joblib
+# The frozen-encoder head is 5KB and is the entire deployable artifact for that
+# variant — the encoder itself is pulled from the Hub at boot, so this file is the
+# only thing the Streamlit and Space demos actually need from this repo.
+!models/marbert_frozen_head.pt
