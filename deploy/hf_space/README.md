@@ -20,10 +20,26 @@ Full write-up, including the accuracy/latency/size comparison against a
 TF-IDF+logistic-regression baseline and a from-scratch PyTorch MLP:
 [github.com/Salman-Elhaddadi/darija-dialect-transformer](https://github.com/Salman-Elhaddadi/darija-dialect-transformer)
 
-## Deploying this Space
+## Status: configured but not schedulable on a free account
 
-Set the hardware to **ZeroGPU** in Space settings (free personal accounts can run
-up to 2 Gradio Spaces on ZeroGPU; Docker Spaces now require a paid plan).
+This Space is complete and correct — `app.py`, `requirements.txt` and the 5 KB head are
+committed and the metadata is valid — but Hugging Face will not currently start it:
+
+```
+403  You've reached your cpu-basic quota limit, please upgrade your account,
+     or pause your previous Spaces to restart this one
+```
+
+That is returned on a brand-new account whose only Space is this one and is already
+paused, so it is a free-tier allocation limit rather than something the repo can fix.
+**ZeroGPU is no longer a way around it** — it now requires a PRO subscription, despite
+older docs describing it as free for personal accounts.
+
+The live transformer demo is therefore hosted on Streamlit Community Cloud instead; see
+`deploy/streamlit/`. This Space is kept as a working Gradio config that will run if the
+quota frees up or the account is upgraded.
+
+## Deploying this Space
 
 By default the Space serves the **frozen-encoder** variant: it pulls MARBERT from
 the Hub at startup and applies the ~3KB linear head committed next to `app.py`, so
