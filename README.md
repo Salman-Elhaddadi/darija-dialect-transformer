@@ -49,6 +49,8 @@ Two of these are constrained by hosting economics rather than by the models:
 
 Streamlit Community Cloud is the free host with enough RAM to actually hold the encoder, which is why the live transformer demo lives there. Deployment steps: [`deploy/streamlit/README.md`](deploy/streamlit/README.md).
 
+The deployment path itself — serialize, reload, re-serve through the Hub encoder, exactly as the demos do — has been verified end to end: `src/smoke_test.py` passes 8/8 on unambiguous cases (probability spread 0.956, no polarity inversion), and `src/score_deployed.py --encoder hub` measures the shipped head at **0.8983 macro-F1** on the full 1,852-row test set, matching the single-seed figure in the table above.
+
 ## Reproducing
 
 ```
@@ -80,4 +82,4 @@ One caveat worth knowing before you try to match published numbers: fixing a see
 - Trained and evaluated on one dataset (MAC corpus); generalization to other Darija sources (YouTube comments, forums) is untested.
 - The corpus is Arabic-script only, so Latin-script Darija (Arabizi) is out of domain. The serving code flags it rather than scoring it silently.
 - The two classical baselines were not re-run across seeds in this repo, so they appear as a single number each. LR is deterministic; the MLP is not.
-- The shipped head is the seed with the best *validation* score, while the single-seed column above is the best *test* seed — so the deployed model sits somewhere in 0.8944–0.8983 rather than exactly at 0.8983. Selecting on validation is the right call; it just means the deployed model's exact score has to be measured with `src/score_deployed.py` instead of read off the table.
+- The shipped head is selected by best *validation* score, while the single-seed column above is the best *test* seed — these aren't guaranteed to be the same checkpoint, so this was measured directly rather than assumed. `src/score_deployed.py --encoder hub` scores the actual deployed head at **0.8983 macro-F1**, matching the table above.
