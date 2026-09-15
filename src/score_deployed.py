@@ -40,15 +40,23 @@ from sklearn.metrics import classification_report, f1_score
 from transformers import AutoModel, AutoTokenizer
 
 import data
-from marbert import ENCODER_DIR, LABELS, MODELS, extract_features, load_encoder, tokenize_split
+from marbert import ENCODER_DIR, LABELS, MODELS, device, extract_features, load_encoder, tokenize_split
 
 HUB_ENCODER = "UBC-NLP/MARBERT"
 
 
 def build_encoder(source: str):
+    # extract_features() moves the *inputs* to device() but assumes the encoder
+    # is already there (that's how every call site in marbert.py uses it) -- on a
+    # GPU box (e.g. Kaggle) an encoder left on the CPU crashes with a
+    # cuda-vs-cpu tensor mismatch the moment it sees a batch.
     if source == "hub":
-        return AutoTokenizer.from_pretrained(HUB_ENCODER), AutoModel.from_pretrained(HUB_ENCODER)
-    return AutoTokenizer.from_pretrained(ENCODER_DIR), load_encoder()
+        model = AutoModel.from_pretrained(HUB_ENCODER)
+        tokenizer = AutoTokenizer.from_pretrained(HUB_ENCODER)
+    else:
+        model = load_encoder()
+        tokenizer = AutoTokenizer.from_pretrained(ENCODER_DIR)
+    return tokenizer, model.to(device())
 
 
 def main() -> None:
